@@ -45,7 +45,7 @@
     <section>
       <h2>Projeksiyon</h2>
       <div class="seg" id="method">
-        <button data-v="pca">PCA</button><button data-v="umap">UMAP</button><button data-v="tsne">t-SNE</button>
+        <button data-v="pca">PCA</button><button data-v="umap">UMAP</button><button data-v="tsne">t-SNE</button><button data-v="rtdae">RTD-AE</button>
       </div>
       <div id="params-umap" class="params server-only">
         <label>n_neighbors <div class="row"><input id="p-nn" type="range" min="5" max="100" step="1" value="15"><output></output></div></label>
@@ -53,6 +53,11 @@
       </div>
       <div id="params-tsne" class="params server-only">
         <label>perplexity <div class="row"><input id="p-perp" type="range" min="5" max="100" step="1" value="30"><output></output></div></label>
+      </div>
+      <div id="params-rtdae" class="params">
+        <p class="hint"><b>Deneysel.</b> Topolojiyi koruyan autoencoder (Trofimov ve ark., ICLR 2023).
+        Bu veride global yapıyı UMAP/t-SNE'den iyi, yerel komşulukları ise daha kötü korur.
+        Sorgular eğitilmiş encoder'dan geçtiği için 3B'de kesin konumuna yerleşir.<span class="server-only"> İlk hesaplama ~1–2 dk sürer.</span></p>
       </div>
       <label class="check server-only"><input id="normalize" type="checkbox" checked> L2 normalize</label>
       <label>Centering

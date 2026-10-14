@@ -10,7 +10,7 @@ const MOD_COLORS = { i: '#4c9aff', t: '#ff9d42' };
 const PALETTE = ['#4c9aff', '#ff9d42', '#41c98a', '#ff5c7a', '#b18cff', '#e8d44d', '#3fd0d4', '#ff7ad9', '#9bd55a', '#c9a27c'];
 const PAIR_COLOR = '#41c98a';
 const K = 12;
-const METHOD_LABEL = { pca: 'PCA', umap: 'UMAP', tsne: 't-SNE' };
+const METHOD_LABEL = { pca: 'PCA', umap: 'UMAP', tsne: 't-SNE', rtdae: 'RTD-AE' };
 
 // Renkler sRGB olarak doğrudan shader'a gider (ShaderMaterial renk dönüşümü yapmaz)
 const rgb = (hex) => [1, 3, 5].map((o) => parseInt(hex.slice(o, o + 2), 16) / 255);
@@ -595,7 +595,9 @@ function projBody() {
 
 async function project() {
   if (!S.space) return;
-  busy(`${METHOD_LABEL[S.method]} hesaplanıyor… ${S.method === 'pca' ? '' : '(ilk seferde biraz sürebilir)'}`);
+  busy(STATIC || S.method === 'pca' ? `${METHOD_LABEL[S.method]} yükleniyor…`
+    : S.method === 'rtdae' ? 'RTD-AE eğitiliyor… (ilk seferde ~1–2 dk)'
+    : `${METHOD_LABEL[S.method]} hesaplanıyor… (ilk seferde biraz sürebilir)`);
   const body = projBody();
   try {
     const [r, g] = await Promise.all([backend.project(body), backend.gap(body)]);
@@ -682,6 +684,7 @@ function bindRange(id, onInput) {
 function showParams() {
   $('#params-umap').classList.toggle('on', S.method === 'umap');
   $('#params-tsne').classList.toggle('on', S.method === 'tsne');
+  $('#params-rtdae').classList.toggle('on', S.method === 'rtdae');
 }
 
 function setupControls() {

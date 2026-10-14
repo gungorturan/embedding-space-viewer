@@ -15,4 +15,5 @@ dependencies = [
     "numpy>=1.26",
     "scikit-learn>=1.5",
     "umap-learn>=0.5.6",
+    "giotto-ph>=0.2.4",
 ]

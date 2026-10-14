@@ -155,6 +155,13 @@ class Space:
             perp = min(float(params.get("perplexity", 30)), (len(X) - 1) / 3)
             Y = TSNE(3, perplexity=perp, init="pca", metric="cosine",
                      random_state=42).fit_transform(X)
+        elif method == "rtdae":
+            import torch
+
+            from . import rtd
+            fitted = rtd.train(X, seed=0)
+            with torch.no_grad():
+                Y = fitted(torch.from_numpy(X)).numpy()
         else:
             raise ValueError(method)
 
@@ -168,6 +175,10 @@ class Space:
             if method == "pca" or method == "umap":
                 with self._lock:
                     return (fitted.transform(v[None])[0] - shift) / scale
+            if method == "rtdae":
+                import torch
+                with torch.no_grad():
+                    return (fitted(torch.from_numpy(v[None].astype(np.float32)))[0].numpy() - shift) / scale
             # t-SNE'nin transform'u yok: yüksek boyutlu en yakın komşuların
             # 3B konumlarının benzerlikle ağırlıklı ortalaması
             sims = l2n(X) @ l2n(v)
@@ -182,6 +193,7 @@ class Space:
             "_place": place, "_tf": tf, "_Y": Yn,
             # Statik export'un sorguları tarayıcıda yerleştirebilmesi için
             "_pca": fitted if method == "pca" else None, "_shift": shift, "_scale": scale,
+            "_mlp": fitted if method == "rtdae" else None,
         }
 
     # ----------------------------------------------------------- sorgular

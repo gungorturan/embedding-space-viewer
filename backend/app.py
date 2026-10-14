@@ -49,7 +49,7 @@ def _space() -> Space:
 
 
 def _proj(sp: Space, r: ProjReq) -> dict:
-    if r.method not in ("pca", "umap", "tsne") or r.center not in ("none", "global", "modality"):
+    if r.method not in ("pca", "umap", "tsne", "rtdae") or r.center not in ("none", "global", "modality"):
         raise HTTPException(400, "Geçersiz projeksiyon parametresi")
     return sp.project(r.method, r.normalize, r.center, r.params)
 

@@ -14,7 +14,7 @@ from pathlib import Path
 
 import numpy as np
 
-from backend import data, models
+from backend import data, models, rtd
 from backend.space import Space
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -27,7 +27,7 @@ COMBOS = [
 ]
 # Tarayıcıda çalışacak ONNX karşılıkları (Hugging Face Hub)
 BROWSER_MODELS = {"clip-b32": "Xenova/clip-vit-base-patch32"}
-METHODS = ["pca", "umap", "tsne"]
+METHODS = ["pca", "umap", "tsne", "rtdae"]
 CENTERS = ["none", "global", "modality"]
 
 
@@ -54,7 +54,13 @@ def export_combo(dataset: str, model: str, n: int) -> dict:
             print(f"  [{key}] {m} / {c}")
             res = sp.project(m, True, c, {})
             res["_Y"].astype("<f4").tofile(d / f"proj_{m}_{c}.bin")
-            p = {"file": f"proj_{m}_{c}.bin", "info": {**res["info"], "approx_query": m != "pca"}}
+            # PCA ve RTD-AE parametrik: sorgu tarayıcıda kesin konumuna yerleşir
+            p = {"file": f"proj_{m}_{c}.bin", "info": {**res["info"], "approx_query": m not in ("pca", "rtdae")}}
+            if m == "rtdae":
+                layers = rtd.mlp_layers(res["_mlp"])
+                np.concatenate([np.r_[W.ravel(), b] for W, b in layers]).astype("<f4").tofile(d / f"mlp_{c}.bin")
+                p["mlp"] = {"file": f"mlp_{c}.bin", "shapes": [list(W.shape) for W, _ in layers],
+                            "shift": f32(res["_shift"]), "scale": float(res["_scale"])}
             if m == "pca":
                 pca = res["_pca"]
                 p["pca"] = {"mean": f32(pca.mean_), "components": [f32(r) for r in pca.components_],

@@ -130,6 +130,23 @@ export class StaticBackend {
     return X;
   }
 
+  #mlpCache = new Map();
+  async #mlp(spec) {
+    // Dosya adları dataset'ler arasında aynı (mlp_none.bin…): anahtar tam yol olmalı
+    const url = this.base + spec.file;
+    if (!this.#mlpCache.has(url)) {
+      const flat = new Float32Array(await (await request(url)).arrayBuffer());
+      let o = 0;
+      const layers = spec.shapes.map(([rows, cols]) => {
+        const W = flat.subarray(o, o + rows * cols); o += rows * cols;
+        const b = flat.subarray(o, o + rows); o += rows;
+        return { W, b, rows, cols };
+      });
+      this.#mlpCache.set(url, layers);
+    }
+    return this.#mlpCache.get(url);
+  }
+
   #sims(M, v) {
     const dim = v.length, N = M.length / dim, out = new Float32Array(N);
     for (let i = 0; i < N; i++) {
@@ -204,7 +221,21 @@ export class StaticBackend {
     let q = v.map((x, d) => x - c.mu_txt[d]);
     if (center !== 'none') q = l2n(q);
     let pos;
-    if (p.pca) {
+    if (p.mlp) {
+      // RTD-AE: eğitilmiş encoder'ın (Linear+ReLU) ileri geçişi, backend/rtd.py ile aynı
+      let h = Float32Array.from(q);
+      const layers = await this.#mlp(p.mlp);
+      layers.forEach(({ W, b, rows, cols }, li) => {
+        const out = new Float32Array(rows);
+        for (let r = 0; r < rows; r++) {
+          let s = b[r];
+          for (let c = 0; c < cols; c++) s += W[r * cols + c] * h[c];
+          out[r] = li < layers.length - 1 ? Math.max(0, s) : s;
+        }
+        h = out;
+      });
+      pos = Array.from(h, (x, a) => (x - p.mlp.shift[a]) / p.mlp.scale);
+    } else if (p.pca) {
       const { mean, components, shift, scale } = p.pca;
       pos = components.map((row, a) => {
         let s = 0;
