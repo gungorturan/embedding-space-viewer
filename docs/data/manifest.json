@@ -1,0 +1,26 @@
+{
+ "combos": [
+  {
+   "key": "flickr1k_clip-b32",
+   "dataset": "flickr1k",
+   "model": "clip-b32",
+   "n": 500,
+   "title": "Flickr30k-1K (görüntü + 5 caption)",
+   "kind": "captions"
+  },
+  {
+   "key": "imagenette_clip-b32",
+   "dataset": "imagenette",
+   "model": "clip-b32",
+   "n": 100,
+   "title": "Imagenette (10 sınıf, 320px)",
+   "kind": "classes"
+  }
+ ],
+ "models": {
+  "clip-b32": {
+   "title": "CLIP ViT-B/32 (OpenAI)",
+   "browser": "Xenova/clip-vit-base-patch32"
+  }
+ }
+}

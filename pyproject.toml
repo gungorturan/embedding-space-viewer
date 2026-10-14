@@ -1,0 +1,18 @@
+[project]
+name = "embedding-space-viewer"
+version = "0.1.0"
+description = "CLIP/SigLIP embedding uzayını 3B ve interaktif olarak görselleştirme aracı"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "torch>=2.4",
+    "transformers>=4.45",
+    "sentencepiece>=0.2",
+    "protobuf>=5",
+    "datasets>=3.0",
+    "pillow>=10",
+    "numpy>=1.26",
+    "scikit-learn>=1.5",
+    "umap-learn>=0.5.6",
+]

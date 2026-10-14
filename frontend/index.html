@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Embedding Space Viewer</title>
+  <link rel="stylesheet" href="static/style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <aside id="left" class="panel">
+    <header class="brand">
+      <h1>Embedding Space Viewer</h1>
+      <span id="device" class="muted"></span>
+    </header>
+
+    <section>
+      <h2>Veri &amp; Model</h2>
+      <label>Dataset <select id="dataset"></select></label>
+      <label>Model <select id="model"></select></label>
+      <label class="server-only"><span id="n-label">Görüntü sayısı</span>
+        <div class="row"><input id="n" type="range" min="10" step="10"><output id="n-out"></output></div>
+      </label>
+      <button id="load" class="primary">Yükle</button>
+    </section>
+
+    <section>
+      <h2>Metin sorgusu</h2>
+      <div class="row">
+        <input id="query" type="search" placeholder="ör. a dog running on the beach" autocomplete="off">
+      </div>
+      <div class="seg" id="query-scope">
+        <button data-v="image" class="on">Görüntü</button><button data-v="text">Metin</button><button data-v="all">Tümü</button>
+      </div>
+      <p class="hint">Enter ile sorgula. Sorgu aynı encoder'dan geçip uzaya yerleştirilir. <kbd>/</kbd> odaklar.</p>
+    </section>
+
+    <section>
+      <h2>Projeksiyon</h2>
+      <div class="seg" id="method">
+        <button data-v="pca">PCA</button><button data-v="umap">UMAP</button><button data-v="tsne">t-SNE</button>
+      </div>
+      <div id="params-umap" class="params server-only">
+        <label>n_neighbors <div class="row"><input id="p-nn" type="range" min="5" max="100" step="1" value="15"><output></output></div></label>
+        <label>min_dist <div class="row"><input id="p-md" type="range" min="0" max="0.99" step="0.01" value="0.1"><output></output></div></label>
+      </div>
+      <div id="params-tsne" class="params server-only">
+        <label>perplexity <div class="row"><input id="p-perp" type="range" min="5" max="100" step="1" value="30"><output></output></div></label>
+      </div>
+      <label class="check server-only"><input id="normalize" type="checkbox" checked> L2 normalize</label>
+      <label>Centering
+        <select id="center">
+          <option value="none">Yok</option>
+          <option value="global">Global ortalama</option>
+          <option value="modality">Modalite başına (gap'i kapatır)</option>
+        </select>
+      </label>
+      <p class="hint static-only">Statik sürüm: embedding'ler önceden hesaplandı, UMAP/t-SNE varsayılan parametrelerle çalışıyor. Metin sorgusu tarayıcınızda çalışan CLIP ile yapılır.</p>
+      <button id="apply">Uygula</button>
+    </section>
+
+    <section>
+      <h2>Görünüm</h2>
+      <div class="seg" id="point-mode">
+        <button data-v="dot">Nokta</button><button data-v="sprite">Görüntü</button>
+      </div>
+      <label>Renk <select id="color-by">
+        <option value="modality">Modalite</option>
+        <option value="label">Sınıf</option>
+      </select></label>
+      <label>Nokta boyutu <div class="row"><input id="size" type="range" min="2" max="30" step="1" value="10"><output></output></div></label>
+      <label class="check"><input id="show-img" type="checkbox" checked> Görüntüleri göster</label>
+      <label class="check"><input id="show-txt" type="checkbox" checked> Metinleri göster</label>
+      <label class="check"><input id="show-gap" type="checkbox" checked> Modality gap vektörü</label>
+      <label class="check"><input id="rotate" type="checkbox"> Otomatik döndür</label>
+      <button id="reset-cam">Kamerayı sıfırla</button>
+    </section>
+  </aside>
+
+  <main id="stage">
+    <div id="canvas-wrap"></div>
+    <div id="legend"></div>
+    <div id="infobar" class="muted"></div>
+    <div id="tooltip" hidden></div>
+    <div id="busy" hidden><div class="spinner"></div><span id="busy-msg"></span></div>
+  </main>
+
+  <aside id="right" class="panel">
+    <section id="detail">
+      <h2>Seçim</h2>
+      <p class="muted">Bir noktaya tıklayın veya metin sorgusu yapın.</p>
+    </section>
+    <section id="gap">
+      <h2>Modality gap</h2>
+      <div id="gap-body" class="muted">—</div>
+    </section>
+  </aside>
+
+  <script type="module" src="static/main.js"></script>
+</body>
+</html>
