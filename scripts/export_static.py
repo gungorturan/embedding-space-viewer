@@ -112,6 +112,10 @@ def export_ui():
     for name in files:
         html = html.replace(f'"static/{name}"', f'"static/{name}?v={v}"')
     (OUT / "index.html").write_text(html)
+    # Diğer sayfalar (wiki vb.) kendi stilleriyle bağımsızdır; olduğu gibi kopyalanır
+    for page in front.glob("*.html"):
+        if page.name != "index.html":
+            shutil.copy(page, OUT / page.name)
     (OUT / ".nojekyll").write_text("")  # GitHub Pages'in Jekyll işlemesini kapat
     print(f"arayüz kopyalandı (sürüm {v})")
 

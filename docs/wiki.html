@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Embedding Space Wiki</title>
+  <style>
+    :root {
+      --bg: #0e1116; --panel: #151a21; --panel-2: #1c222b; --border: #2a313c;
+      --text: #e6e9ee; --muted: #8b95a5; --accent: #5aa9ff;
+      --img: #4c9aff; --txt: #ff9d42; --good: #41c98a; --bad: #ff6b6b;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text);
+      font: 15.5px/1.65 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .top {
+      position: sticky; top: 0; z-index: 5; background: rgba(14,17,22,.92); backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border); padding: 10px 16px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .top b { font-size: 14.5px; }
+    .top a.app {
+      background: var(--accent); color: #06121f; font-weight: 600; font-size: 13px;
+      padding: 6px 12px; border-radius: 6px; white-space: nowrap;
+    }
+    .top a.app:hover { text-decoration: none; filter: brightness(1.08); }
+    .layout { display: grid; grid-template-columns: 240px minmax(0, 760px); gap: 48px; justify-content: center; padding: 32px 16px 80px; }
+    nav.toc { position: sticky; top: 72px; align-self: start; font-size: 13.5px; max-height: calc(100vh - 96px); overflow-y: auto; }
+    nav.toc h4 { margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); }
+    nav.toc ol { list-style: none; margin: 0; padding: 0; counter-reset: s; }
+    nav.toc li { counter-increment: s; margin: 2px 0; }
+    nav.toc li a { display: block; padding: 4px 8px; border-radius: 6px; color: var(--muted); }
+    nav.toc li a::before { content: counter(s) ". "; }
+    nav.toc li a:hover, nav.toc li a.on { background: var(--panel-2); color: var(--text); text-decoration: none; }
+    main h1 { font-size: 30px; line-height: 1.2; margin: 0 0 10px; letter-spacing: -.3px; }
+    .lede { color: var(--muted); font-size: 17px; margin: 0 0 28px; }
+    main h2 {
+      font-size: 22px; margin: 48px 0 12px; padding-top: 20px; border-top: 1px solid var(--border);
+      letter-spacing: -.2px;
+    }
+    main h3 { font-size: 16.5px; margin: 26px 0 8px; }
+    p { margin: 10px 0; }
+    code { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+    pre { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+    pre code { background: none; border: 0; padding: 0; }
+    .tbl { overflow-x: auto; margin: 14px 0; border: 1px solid var(--border); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    th, td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; font-variant-numeric: tabular-nums; }
+    th:first-child, td:first-child { text-align: left; }
+    th { background: var(--panel); color: var(--muted); font-weight: 600; font-size: 12px; }
+    tr:last-child td { border-bottom: 0; }
+    td.best { color: var(--good); font-weight: 600; }
+    tr.truth td { background: rgba(90,169,255,.08); font-weight: 600; }
+    td.wrap, th.wrap { white-space: normal; text-align: left; }
+    .callout {
+      border: 1px solid var(--border); border-left: 3px solid var(--accent); background: var(--panel);
+      border-radius: 8px; padding: 12px 16px; margin: 18px 0;
+    }
+    .callout.warn { border-left-color: var(--txt); }
+    .callout b:first-child { display: block; margin-bottom: 2px; }
+    .muted { color: var(--muted); }
+    .small { font-size: 13px; }
+    .bars { margin: 16px 0; display: grid; gap: 6px; }
+    .bar { display: grid; grid-template-columns: 120px 1fr 64px; gap: 10px; align-items: center; font-size: 13.5px; }
+    .bar .track { background: var(--panel-2); border-radius: 4px; height: 14px; overflow: hidden; }
+    .bar .fill { height: 100%; background: var(--accent); border-radius: 4px; }
+    .bar .fill.truth { background: var(--good); }
+    .bar .fill.over { background: var(--txt); }
+    .bar span:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    .legend-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 4px; vertical-align: 0; }
+    ol.refs { padding-left: 20px; font-size: 14px; }
+    ol.refs li { margin: 6px 0; }
+    footer { margin-top: 56px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--border); padding-top: 16px; }
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 20px; }
+      nav.toc { position: static; max-height: none; margin-bottom: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+      main h1 { font-size: 25px; }
+      .bar { grid-template-columns: 90px 1fr 56px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <b>Embedding Space Wiki</b>
+    <a class="app" href="./">Uygulamaya dön →</a>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="İçindekiler">
+      <h4>İçindekiler</h4>
+      <ol>
+        <li><a href="#uzay">Embedding uzayı nedir?</a></li>
+        <li><a href="#veri">Uzayda ne "durur"?</a></li>
+        <li><a href="#gap">Modality gap</a></li>
+        <li><a href="#sinir">3B'nin matematiksel sınırı</a></li>
+        <li><a href="#yontemler">Projeksiyon yöntemleri</a></li>
+        <li><a href="#gap-olcek">Gap'i en doğru hangisi gösterir?</a></li>
+        <li><a href="#rtdae">RTD-AE deneyi</a></li>
+        <li><a href="#kural">Pratik kurallar</a></li>
+        <li><a href="#teknik">Bu site nasıl çalışıyor?</a></li>
+        <li><a href="#kaynaklar">Kaynaklar</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <h1>Görüntü-metin modellerinde embedding uzayı</h1>
+      <p class="lede">Bu sayfa, Embedding Space Viewer'da gördüklerinizin ne anlama geldiğini ve nerede yanıltabileceğini anlatıyor. Rakamların tamamı bu aracın kendi verisi üzerinde ölçüldü: Flickr30k'den 500 görüntü ve 2500 caption, CLIP ViT-B/32, 512 boyut. Başka bir veri kaynağı kullanıldığında belirtiliyor.</p>
+
+      <h2 id="uzay">1. Embedding uzayı nedir?</h2>
+      <p>Bir encoder, girdiyi (bir görüntüyü ya da cümleyi) sabit uzunlukta bir vektöre çevirir. Anlamca benzer girdiler bu uzayda birbirine yakın düşer; yakınlık genellikle <b>cosine benzerliği</b> ile ölçülür.</p>
+      <p>Görüntü-metin modellerinde temelde iki yaklaşım var:</p>
+      <ul>
+        <li><b>Ortak uzay</b> (CLIP, SigLIP, ALIGN): Görüntü ve metin için ayrı encoder'lar var, ama ikisinin çıktısı aynı uzaya yansıtılıyor. Eğitimde contrastive loss, eşleşen görüntü-caption çiftlerini birbirine yaklaştırıyor, eşleşmeyenleri uzaklaştırıyor. Bu sitedeki modeller bu türden.</li>
+        <li><b>Projeksiyonlu VLM'ler</b> (LLaVA, BLIP-2, Qwen-VL): Görüntü parçaları bir bağlayıcı katman (MLP, Q-Former) üzerinden dil modelinin token uzayına taşınıyor. Burada ortak bir uzay yok; görsel taraf, dil modelinin uzayına uyarlanıyor.</li>
+      </ul>
+
+      <h2 id="veri">2. Uzayda ne "durur"?</h2>
+      <p>Hiçbir şey. Yaygın bir yanılgı, uzayda modelin eğitildiği verilerin bulunduğunu düşünmek. Oysa eğitimden geriye yalnızca iki <b>fonksiyon</b> kalır:</p>
+      <pre><code>f_görüntü(görüntü) → 512 boyutlu vektör
+f_metin(metin)       → 512 boyutlu vektör</code></pre>
+      <p>Eğitim verisi (CLIP için ~400 milyon görüntü-metin çifti) yalnızca bu fonksiyonların ağırlıklarını ayarlamak için kullanıldı. Bu ağırlıklar ~600 MB tutuyor; içlerinde bir veritabanı yok.</p>
+      <p>Uygulamada gördüğünüz her nokta, <b>bizim seçtiğimiz</b> bir görüntünün ya da metnin bu fonksiyondan geçirilmiş hâli. Yazdığınız bir metin sorgusu da aynı şekilde uzaya yerleşiyor; o cümle eğitim verisinde hiç geçmemiş olsa bile.</p>
+      <div class="callout">
+        <b>Eğitim verisi uzayın şeklini belirler; noktalar ise uzaya sorduğumuz sorulardır.</b>
+        Köpek fotoğraflarının birbirine yakın düşmesi eğitimin bir izi. Eğitimde az bulunan alanlardan gelen görüntüler (ör. tıbbi görüntüler) ise birbirinden iyi ayrışmaz, tek bir küme halinde toplanır.
+      </div>
+
+      <h2 id="gap">3. Modality gap</h2>
+      <p>CLIP benzeri modellerde görüntü ve metin embedding'leri aynı uzayda olsalar da <b>uzayın farklı bölgelerinde</b> toplanır (Liang ve ark., 2022). Bu yüzden bir caption'ın en yakın komşuları neredeyse her zaman diğer caption'lar olur, kendi görüntüsü değil:</p>
+      <div class="tbl"><table>
+        <tr><th>Ölçüm (512B, Flickr + CLIP)</th><th>Değer</th></tr>
+        <tr><td>Merkezler arası uzaklık ‖μ<sub>görüntü</sub> − μ<sub>metin</sub>‖</td><td>0.802</td></tr>
+        <tr><td>Eşleşen görüntü-caption çiftlerinin ortalama cosine'ı</td><td>0.312</td></tr>
+        <tr><td>Rastgele görüntü-caption çiftlerinin ortalama cosine'ı</td><td>0.171</td></tr>
+        <tr><td>Görüntü-görüntü ortalama cosine</td><td>0.486</td></tr>
+        <tr><td>Metin-metin ortalama cosine</td><td>0.498</td></tr>
+      </table></div>
+      <p>Eşleşen bir çift, rastgele bir çiftten yalnızca biraz daha benzer (0.31'e karşı 0.17). Buna karşılık herhangi iki görüntü veya herhangi iki metin birbirine çok daha benzer (~0.49). Örneğin "a dog running through the snow" sorgusunun en yakın metinleri ~0.78 cosine verirken, en yakın görüntüleri ~0.25'te kalıyor.</p>
+
+      <h3>Gap kapatılabilir, ve bu retrieval'ı neredeyse etkilemez</h3>
+      <p>Her modaliteden kendi ortalamasını çıkarıp vektörleri yeniden normalize ettiğinizde (uygulamada <i>Centering → Modalite başına</i>) gap neredeyse tamamen kapanıyor. Görüntüden metne arama başarısı ise az değişiyor. Global centering ise başka bir sonuç veriyor:</p>
+      <div class="tbl"><table>
+        <tr><th>Centering</th><th>Gap normu</th><th>Görüntü → metin top-1</th><th>Metin → görüntü top-1</th></tr>
+        <tr><td>Yok</td><td>0.802</td><td>82.6%</td><td>65.5%</td></tr>
+        <tr><td>Global ortalama</td><td>0.883</td><td style="color:var(--bad)">32.2%</td><td>65.9%</td></tr>
+        <tr><td>Modalite başına</td><td class="best">0.035</td><td>79.0%</td><td>67.4%</td></tr>
+      </table></div>
+      <div class="callout warn">
+        <b>Global centering retrieval'ı bozuyor.</b>
+        Tüm vektörlerden tek bir ortak ortalamayı çıkarmak, iki modaliteyi birbirinin tam tersi yönlere itiyor (merkezler arası cosine −0.99). Sonuçta görüntüden metne arama başarısı %82.6'dan %32.2'ye düşüyor. Gap'i kapatmak istiyorsanız her modaliteyi kendi ortalamasıyla merkezleyin.
+      </div>
+      <p>Model karşılaştırması (Imagenette, 10 sınıf): SigLIP'te gap CLIP'ten bile büyük (1.11'e karşı 0.84), ama zero-shot sınıflandırma doğruluğu %99.7. Yani gap büyük olsa da model görüntüyle metni doğru eşleştirebiliyor.</p>
+
+      <h2 id="sinir">4. 3B'nin matematiksel sınırı</h2>
+      <p>512 boyutu 3 boyuta indirmek bilgi kaybı demek. Peki bu kayıp ne kadar büyük? Bunun için şu soruları ölçtük:</p>
+      <div class="tbl"><table>
+        <tr><th>Soru</th><th>Cevap</th></tr>
+        <tr><td>Varyansın %90'ını taşımak için kaç boyut gerekiyor?</td><td>184</td></tr>
+        <tr><td>3 boyut varyansın ne kadarını taşıyor?</td><td>%24</td></tr>
+        <tr><td>Komşulukların %90'ını korumak için kaç boyut gerekiyor?</td><td>~200</td></tr>
+        <tr><td>İçsel boyut (TwoNN tahmini): görüntüler / metinler</td><td>~21 / ~8</td></tr>
+      </table></div>
+      <p>PCA ile hedef boyut arttıkça, bir noktanın 10 en yakın komşusundan kaçının korunduğu:</p>
+      <div class="bars" role="img" aria-label="PCA hedef boyutuna göre kNN@10 korunumu">
+        <div class="bar"><span>2 boyut</span><div class="track"><div class="fill" style="width:2.2%"></div></div><span>%2</span></div>
+        <div class="bar"><span><b>3 boyut</b></span><div class="track"><div class="fill over" style="width:4.9%"></div></div><span><b>%5</b></span></div>
+        <div class="bar"><span>10 boyut</span><div class="track"><div class="fill" style="width:24%"></div></div><span>%24</span></div>
+        <div class="bar"><span>25 boyut</span><div class="track"><div class="fill" style="width:45.6%"></div></div><span>%46</span></div>
+        <div class="bar"><span>50 boyut</span><div class="track"><div class="fill" style="width:62.7%"></div></div><span>%63</span></div>
+        <div class="bar"><span>100 boyut</span><div class="track"><div class="fill" style="width:77.8%"></div></div><span>%78</span></div>
+        <div class="bar"><span>200 boyut</span><div class="track"><div class="fill" style="width:90.2%"></div></div><span>%90</span></div>
+      </div>
+      <p><b>İçsel boyut</b> en kritik sayı. Görüntüler, 512 boyutlu uzayın içinde ~21 boyutlu, kıvrımlı bir yüzey üzerinde duruyor. Hiçbir yöntem, ne kadar akıllı olursa olsun, 21 boyutlu bir yüzeyi 3 boyuta yırtmadan veya üst üste katlamadan yerleştiremez. Bu bir algoritma sorunu değil, geometrinin kendisinden gelen bir sınır.</p>
+      <div class="callout">
+        <b>Harita benzetmesi</b>
+        Küreyi düz bir kâğıda bozmadan aktarmak imkânsızdır. Mercator yönleri korur ama alanları bozar (Grönland Afrika kadar görünür). Haritacılar bu yüzden "en doğru haritayı" aramaz; hangi özelliği koruyacaklarını seçer ve bozulmayı ölçerler. Embedding projeksiyonlarına da aynı gözle bakmak gerekiyor.
+      </div>
+
+      <h2 id="yontemler">5. Projeksiyon yöntemleri</h2>
+      <p>Uygulamadaki dört yöntemi ve karşılaştırma için düz bir autoencoder'ı aynı metriklerle ölçtük (Flickr + CLIP, centering yok):</p>
+      <div class="tbl"><table>
+        <tr><th>Yöntem</th><th>Trust</th><th>kNN@10</th><th>Spearman ρ</th><th>Pearson</th><th>Triplet</th></tr>
+        <tr><td>PCA</td><td>0.805</td><td>0.049</td><td class="best">0.792</td><td class="best">0.857</td><td>0.735</td></tr>
+        <tr><td>UMAP</td><td>0.933</td><td>0.401</td><td>0.651</td><td>0.812</td><td>0.681</td></tr>
+        <tr><td>t-SNE</td><td class="best">0.957</td><td class="best">0.495</td><td>0.409</td><td>0.432</td><td>0.639</td></tr>
+        <tr><td>RTD-AE</td><td>0.819</td><td>0.083</td><td>0.696</td><td>0.682</td><td class="best">0.736</td></tr>
+        <tr><td class="muted">AE (yalnızca MSE)</td><td class="muted">0.951</td><td class="muted">0.322</td><td class="muted">0.558</td><td class="muted">0.553</td><td class="muted">0.672</td></tr>
+      </table></div>
+      <p class="small muted">
+        <b>Trust</b> (trustworthiness): 3B'de yakın görünen noktalar gerçekte de yakın mı?
+        <b>kNN@10</b>: 512 boyuttaki 10 en yakın komşudan kaçı 3B'de de ilk 10'da?
+        <b>Spearman ρ / Pearson</b>: rastgele nokta çiftlerinin uzaklıkları 3B'de ne ölçüde korunuyor?
+        <b>Triplet</b>: "A, B'ye mi yakın, C'ye mi?" sorusunun cevabı 3B'de de aynı kalıyor mu?
+        İlk ikisi yerel yapıyı, son üçü global yapıyı ölçüyor.
+      </p>
+      <div class="tbl"><table>
+        <tr><th>Yöntem</th><th class="wrap">Güvenilir olduğu konular</th><th class="wrap">Yanıltabileceği konular</th></tr>
+        <tr><td>PCA</td><td class="wrap">Global mesafeler, eksen yönleri, doğrusal yapılar. Gap genellikle ilk eksende.</td><td class="wrap">Yerel komşuluklar (yalnızca %5'i korunuyor)</td></tr>
+        <tr><td>UMAP</td><td class="wrap">Küme üyeliği, yerel komşuluk</td><td class="wrap">Kümeler arası mesafe, küme büyüklüğü, gap'in büyüklüğü</td></tr>
+        <tr><td>t-SNE</td><td class="wrap">Yakın komşuluklar (en iyisi)</td><td class="wrap">Tüm global yapı; sorgu konumu yaklaşık</td></tr>
+        <tr><td>RTD-AE</td><td class="wrap">Topoloji ve triplet sıralaması; sorgu konumu kesin</td><td class="wrap">Yerel komşuluklar</td></tr>
+      </table></div>
+      <p>En iyi durumda bile (t-SNE) komşulukların yarısı 3B'de kayboluyor. Bu yüzden uygulamadaki komşu listeleri ve gap metrikleri 3B görünümden değil, doğrudan 512 boyutlu uzaydan hesaplanıyor.</p>
+
+      <h2 id="gap-olcek">6. Gap'i en doğru hangisi gösterir?</h2>
+      <p>UMAP'te iki modalite birbirinden uzak iki ada olarak görünür; t-SNE ve RTD-AE'de ise iki bulut yan yana durur. Bu yüzden ilk bakışta "gap'i en iyi UMAP gösteriyor" sonucuna varmak kolay. Ölçümler bunun tersini söylüyor:</p>
+      <div class="tbl"><table>
+        <tr><th>Uzay</th><th>Komşuları aynı modaliteden</th><th>Lineer ayrılabilirlik</th><th>Gap / bulut yayılımı</th></tr>
+        <tr class="truth"><td>512B (gerçek)</td><td>%100</td><td>%100</td><td>1.14</td></tr>
+        <tr><td>PCA</td><td>%100</td><td>%100</td><td>3.81</td></tr>
+        <tr><td>UMAP</td><td>%100</td><td>%100</td><td>9.28</td></tr>
+        <tr><td>t-SNE</td><td>%100</td><td>%99.5</td><td>1.66</td></tr>
+        <tr><td>RTD-AE</td><td>%98.7</td><td>%99.0</td><td>1.69</td></tr>
+      </table></div>
+      <p>Gap dört yöntemin hepsinde var: her yöntemde komşular kendi modalitesinden ve iki modalite bir düzlemle ayrılabiliyor. Fark, gap'in <b>ne kadar büyük çizildiğinde</b>:</p>
+      <div class="bars" role="img" aria-label="Projeksiyonların gap'i büyütme oranı">
+        <div class="bar"><span>Gerçek (512B)</span><div class="track"><div class="fill truth" style="width:12.3%"></div></div><span>×1.0</span></div>
+        <div class="bar"><span>t-SNE</span><div class="track"><div class="fill" style="width:17.9%"></div></div><span>×1.5</span></div>
+        <div class="bar"><span>RTD-AE</span><div class="track"><div class="fill" style="width:18.2%"></div></div><span>×1.5</span></div>
+        <div class="bar"><span>PCA</span><div class="track"><div class="fill over" style="width:41.1%"></div></div><span>×3.3</span></div>
+        <div class="bar"><span>UMAP</span><div class="track"><div class="fill over" style="width:100%"></div></div><span>×8.1</span></div>
+      </div>
+      <p>Gerçekte iki modalitenin merkezleri arasındaki uzaklık, bulutların kendi yarıçapıyla neredeyse aynı (oran 1.14). Yani gerçek resim <b>yan yana duran ama hiç karışmayan iki bulut</b>. UMAP bunu ~8 kat büyüterek iki ayrı ada gibi çiziyor. UMAP, gap'in <i>var olduğunu</i> en çarpıcı biçimde gösteren yöntem; ama <i>ne kadar büyük olduğunu</i> en çok bozan da yine o.</p>
+      <div class="callout">
+        <b>t-SNE veya RTD-AE görünümünde gap'i görmek için</b>
+        "Metinleri göster" kutusunu kapatıp açın; görüntü bulutunun hep aynı tarafta kaldığını göreceksiniz. Sahnedeki <span class="legend-dot" style="background:var(--img)"></span>μ görüntü → <span class="legend-dot" style="background:var(--txt)"></span>μ metin oku gap'in yönünü gösteriyor.
+      </div>
+
+      <h2 id="rtdae">7. RTD-AE deneyi</h2>
+      <p><a href="https://arxiv.org/abs/2302.00136">Trofimov ve ark. (ICLR 2023)</a>, bir autoencoder'ı yeniden oluşturma hatası ile <b>Representation Topology Divergence</b>'ın toplamını en aza indirecek şekilde eğitiyor. RTD, iki nokta bulutunun topolojik özelliklerini (kümeler, döngüler ve bunların nerede oluştuğu) persistent homology ile karşılaştıran türevlenebilir bir ölçü. Makale, global yapıyı UMAP ve t-SNE'den belirgin biçimde daha iyi koruduğunu raporluyor.</p>
+      <h3>Bu veride ne bulduk?</h3>
+      <ul>
+        <li><b>RTD terimi işe yarıyor:</b> Aynı autoencoder'a RTD eklemek global metrikleri belirgin biçimde iyileştiriyor (Spearman 0.56 → 0.70, triplet 0.67 → 0.74). Bunun bedeli yerel komşulukta ödeniyor (kNN 0.32 → 0.08).</li>
+        <li><b>PCA'yı geçemiyor:</b> Mesafe korelasyonunda PCA önde (0.86'ya karşı 0.68); triplet doğruluğunda ise ikisi fiilen berabere. Makaledeki büyük kazançlar, PCA'nın zayıf kaldığı doğrusal olmayan verilerde (Spheres, Mammoth) elde edilmişti. Bizim verideki en baskın yapı olan modality gap ise <b>doğrusal</b>.</li>
+        <li><b>Daha uzun eğitim fayda sağlamıyor:</b> En iyi değerlere ~80. epoch civarında ulaşılıyor; 320 epoch'a kadar sonuçlar iyileşmiyor. İki farklı seed tutarlı sonuçlar veriyor.</li>
+        <li><b>Asıl avantajı parametrik olması:</b> Metin sorguları eğitilmiş encoder'dan geçirilerek 3B'de kesin konumlarına yerleşiyor.</li>
+      </ul>
+      <h3>Yeniden üretilebilirlik notları</h3>
+      <ul>
+        <li>PyPI'daki <code>rtd-ae</code> 0.1.2 paketi olduğu gibi çalışmıyor. Paket, giotto-ph'nin yayımlanmamış, değiştirilmiş bir sürümünün <code>pairs</code> çıktısına dayanıyor. Standart giotto-ph'nin <code>return_generators</code> çıktısıyla aynı kenar çiftleri elde edilebiliyor; barkodların birebir aynı olduğunu doğruladık.</li>
+        <li>Resmi repolarda lisans bulunmadığı için bu sitedeki RTD uygulaması makaledeki tanımdan bağımsız olarak yazıldı. Altı farklı batch'te resmi kodla <b>birebir aynı loss ve gradyan değerlerini</b> veriyor.</li>
+        <li>Makale GPU'da çalışıyordu. Apple M4 CPU'da, batch 80 ile 3000 noktanın 80 epoch'luk eğitimi 1.5–3 dakika sürüyor. Batch 256'da ise tek bir adım (rastgele başlangıçla) 43 saniye.</li>
+        <li>Ayarlar makalenin 3B deneylerinden alındı: batch 80, 20 epoch ısınma, ardından 60 epoch RTD, λ = 1, H1, card = 50. Hiperparametre taraması yapılmadı.</li>
+      </ul>
+
+      <h2 id="kural">8. Pratik kurallar</h2>
+      <div class="callout">
+        <b>3B görünüm hipotez üretir, yüksek boyut ise kanıtlar.</b>
+        Görselde fark ettiğiniz bir şeyi ("bu iki küme ayrı görünüyor") 512 boyutta doğrulayın: cosine benzerliği, komşu listesi ya da gap metrikleri ile.
+      </div>
+      <ul>
+        <li><b>Üç yöntemi karşılaştırın.</b> Hepsinde görünen bir yapı büyük ihtimalle gerçektir. Yalnızca birinde görünen bir yapı büyük ihtimalle o yöntemin yan etkisidir.</li>
+        <li><b>Kararlılığı test edin.</b> UMAP parametrelerini değiştirince kaybolan bir küme güvenilmezdir.</li>
+        <li><b>Bağlantı çizgilerine bakın.</b> Bir nokta seçildiğinde çizilen çizgiler 512 boyuttaki gerçek komşulara gidiyor. 3B'de kısalarsa projeksiyon o bölgede doğru söylüyor; uzunlarsa yanıltıyor.</li>
+        <li><b>Sorunuza göre yöntem seçin:</b>
+          <div class="tbl"><table>
+            <tr><th class="wrap">Soru</th><th class="wrap">Önerilen</th></tr>
+            <tr><td class="wrap">Gap var mı, yönü ne?</td><td class="wrap">PCA</td></tr>
+            <tr><td class="wrap">Gap ne kadar büyük?</td><td class="wrap">RTD-AE / t-SNE + sağ paneldeki 512B metrikleri</td></tr>
+            <tr><td class="wrap">Bir modalitenin içindeki konu kümeleri?</td><td class="wrap">UMAP / t-SNE</td></tr>
+            <tr><td class="wrap">Bir sorgu uzayın neresine düşüyor?</td><td class="wrap">PCA veya RTD-AE (kesin konum)</td></tr>
+          </table></div>
+        </li>
+      </ul>
+
+      <h2 id="teknik">9. Bu site nasıl çalışıyor?</h2>
+      <ul>
+        <li><b>Önceden hesaplananlar:</b> Embedding'ler, 4 yöntem × 3 centering için 12 projeksiyon ve gap metrikleri. Bunlar PyTorch ile hesaplanıp sitede statik dosya olarak sunuluyor.</li>
+        <li><b>Tarayıcıda hesaplananlar:</b> Komşu aramaları (512 boyutta cosine) ve metin sorguları. Metin sorguları için CLIP'in metin encoder'ı <a href="https://github.com/huggingface/transformers.js">transformers.js</a> ile tarayıcınızda çalışıyor. Model ilk sorguda bir kez iniyor (~127 MB), sonra tarayıcı önbellekte tutuyor.</li>
+        <li><b>Sorgu konumu:</b> PCA ve RTD-AE'de kesin; UMAP ve t-SNE'de, 512 boyuttaki en yakın 10 komşunun 3B konumlarının benzerlikle ağırlıklı ortalaması.</li>
+      </ul>
+      <h3>Neden fp16 model?</h3>
+      <p>Tarayıcıdaki modelin, sitedeki embedding'leri üreten PyTorch modeliyle aynı sonucu vermesi gerekiyor. Beş caption üzerinde ölçtük:</p>
+      <div class="tbl"><table>
+        <tr><th>Model dosyası</th><th>Boyut</th><th>PyTorch'la ortalama cosine</th><th>En kötü</th></tr>
+        <tr><td>int8 / uint8 / q8</td><td>64 MB</td><td style="color:var(--bad)">0.79</td><td style="color:var(--bad)">0.59</td></tr>
+        <tr><td>q4 / q4f16</td><td>73 MB</td><td>0.978</td><td>0.959</td></tr>
+        <tr><td>fp16</td><td>127 MB</td><td class="best">1.000</td><td class="best">1.000</td></tr>
+      </table></div>
+      <p>8-bit varyantlar sessizce yanlış sonuç veriyor. CLIP'te sorgu ile görüntüler arasındaki benzerlikler 0.20–0.30 gibi dar bir aralıkta toplandığı için, q4'ün %2–4'lük sapması bile sonuç sıralamasını değiştirmeye yetiyor.</p>
+      <p class="small muted">Kaynak kod ve yerel sürüm (canlı UMAP/t-SNE parametreleri, SigLIP): <a href="https://github.com/gungorturan/embedding-space-viewer">github.com/gungorturan/embedding-space-viewer</a></p>
+
+      <h2 id="kaynaklar">10. Kaynaklar</h2>
+      <ol class="refs">
+        <li>Radford ve ark. (2021). <i>Learning Transferable Visual Models From Natural Language Supervision</i> (CLIP). <a href="https://arxiv.org/abs/2103.00020">arXiv:2103.00020</a></li>
+        <li>Zhai ve ark. (2023). <i>Sigmoid Loss for Language Image Pre-Training</i> (SigLIP). <a href="https://arxiv.org/abs/2303.15343">arXiv:2303.15343</a></li>
+        <li>Liang ve ark. (2022). <i>Mind the Gap: Understanding the Modality Gap in Multi-modal Contrastive Representation Learning</i>. <a href="https://arxiv.org/abs/2203.02053">arXiv:2203.02053</a></li>
+        <li>Trofimov ve ark. (2023). <i>Learning Topology-Preserving Data Representations</i> (RTD-AE), ICLR 2023. <a href="https://arxiv.org/abs/2302.00136">arXiv:2302.00136</a></li>
+        <li>McInnes, Healy, Melville (2018). <i>UMAP: Uniform Manifold Approximation and Projection for Dimension Reduction</i>. <a href="https://arxiv.org/abs/1802.03426">arXiv:1802.03426</a></li>
+        <li>van der Maaten, Hinton (2008). <i>Visualizing Data using t-SNE</i>. <a href="https://www.jmlr.org/papers/v9/vandermaaten08a.html">JMLR 9</a></li>
+        <li>Facco ve ark. (2017). <i>Estimating the intrinsic dimension of datasets by a minimal neighborhood information</i> (TwoNN). <a href="https://arxiv.org/abs/1803.06992">arXiv:1803.06992</a></li>
+        <li>Wang, Isola (2020). <i>Understanding Contrastive Representation Learning through Alignment and Uniformity on the Hypersphere</i>. <a href="https://arxiv.org/abs/2005.10242">arXiv:2005.10242</a></li>
+        <li>Liu ve ark. (2023). <i>Visual Instruction Tuning</i> (LLaVA). <a href="https://arxiv.org/abs/2304.08485">arXiv:2304.08485</a></li>
+        <li>Li ve ark. (2023). <i>BLIP-2: Bootstrapping Language-Image Pre-training with Frozen Image Encoders and Large Language Models</i>. <a href="https://arxiv.org/abs/2301.12597">arXiv:2301.12597</a></li>
+      </ol>
+
+      <footer>
+        Tüm ölçümler bu aracın verisi üzerinde yapıldı ve kaynak koddaki betiklerle tekrarlanabilir. Sonuçlar tek bir veri seti ve tek bir model ailesi için geçerli; başka verilerde farklı çıkabilir.
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    // İçindekiler: görünür bölümü vurgula
+    const links = [...document.querySelectorAll('nav.toc a')];
+    const byId = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
+    const obs = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        links.forEach((a) => a.classList.remove('on'));
+        byId.get(e.target.id)?.classList.add('on');
+      }
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    document.querySelectorAll('main h2[id]').forEach((h) => obs.observe(h));
+  </script>
+</body>
+</html>

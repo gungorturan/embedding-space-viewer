@@ -156,4 +156,9 @@ def index():
     return FileResponse(FRONTEND / "index.html")
 
 
+@app.get("/wiki.html")
+def wiki():
+    return FileResponse(FRONTEND / "wiki.html")
+
+
 app.mount("/static", StaticFiles(directory=FRONTEND), name="static")

@@ -33,6 +33,9 @@ body {
 #right { border-left: 1px solid var(--border); }
 
 .brand { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+.brand-links { display: flex; gap: 10px; align-items: baseline; font-size: 12px; }
+.brand-links a { color: var(--accent); text-decoration: none; font-weight: 600; }
+.brand-links a:hover { text-decoration: underline; }
 h1 { font-size: 15px; margin: 0; font-weight: 650; letter-spacing: .2px; }
 h2 {
   font-size: 11px; text-transform: uppercase; letter-spacing: .8px;

@@ -8,6 +8,8 @@ CLIP / SigLIP gibi görüntü-metin modellerinin ortak embedding uzayını 3B ve
 ./run.sh            # http://127.0.0.1:8765
 ```
 
+Aracın neyi neden gösterdiğini ve ölçüm sonuçlarını anlatan bir wiki sayfası var: [`frontend/wiki.html`](frontend/wiki.html) (canlı: [wiki](https://gungorturan.github.io/embedding-space-viewer/wiki.html)).
+
 İlk açılışta Flickr30k-1K + CLIP ViT-B/32 otomatik yüklenir. Modeller ve dataset'ler Hugging Face önbelleğine iner, embedding'ler `cache/emb/` altına kaydedilir. Aynı dataset/model/n kombinasyonu ikinci kez hesaplanmaz.
 
 ## Statik sürüm (GitHub Pages)
