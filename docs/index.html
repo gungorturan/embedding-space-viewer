@@ -54,11 +54,6 @@
       <div id="params-tsne" class="params server-only">
         <label>perplexity <div class="row"><input id="p-perp" type="range" min="5" max="100" step="1" value="30"><output></output></div></label>
       </div>
-      <div id="params-rtdae" class="params">
-        <p class="hint"><b>Deneysel.</b> Topolojiyi koruyan autoencoder (Trofimov ve ark., ICLR 2023).
-        Bu veride global yapıyı UMAP/t-SNE'den iyi, yerel komşulukları ise daha kötü korur.
-        Sorgular eğitilmiş encoder'dan geçtiği için 3B'de kesin konumuna yerleşir.<span class="server-only"> İlk hesaplama ~1–2 dk sürer.</span></p>
-      </div>
       <label class="check server-only"><input id="normalize" type="checkbox" checked> L2 normalize</label>
       <label>Centering
         <select id="center">
@@ -67,7 +62,20 @@
           <option value="modality">Modalite başına (gap'i kapatır)</option>
         </select>
       </label>
-      <p class="hint static-only">Statik sürüm: embedding'ler önceden hesaplandı, UMAP/t-SNE varsayılan parametrelerle çalışıyor. Metin sorgusu tarayıcınızda çalışan CLIP ile yapılır.</p>
+      <div id="method-notes">
+        <p class="hint" data-m="pca"><b>Doğrusal.</b> Verinin en çok varyans taşıyan üç yönüne izdüşüm.
+        Global mesafeleri en iyi koruyan yöntem; yerel komşulukları ise neredeyse hiç korumaz.
+        Eksenler anlamlıdır: modality gap genellikle ilk eksende görünür. Sorgular kesin konumuna yerleşir.</p>
+        <p class="hint" data-m="umap"><b>Doğrusal olmayan, komşuluk grafiğine dayalı.</b> Kümeleri ve yerel
+        komşulukları iyi korur. Kümeler arası mesafeler ve küme büyüklükleri ise anlamlı değildir;
+        bu veride modality gap'i olduğundan büyük gösterir.</p>
+        <p class="hint" data-m="tsne"><b>Yerel yapıya odaklı.</b> Yakın komşulukları en iyi koruyan yöntem;
+        global yapı korunmaz, kümeler arası uzaklıklar anlamsızdır. Yeni noktaları doğrudan
+        yerleştiremediği için sorgu konumu yaklaşıktır.</p>
+        <p class="hint" data-m="rtdae"><b>Deneysel.</b> Topolojiyi koruyan autoencoder (Trofimov ve ark., ICLR 2023).
+        Bu veride global yapıyı UMAP/t-SNE'den iyi, yerel komşulukları ise daha kötü korur.
+        Sorgular eğitilmiş encoder'dan geçtiği için 3B'de kesin konumuna yerleşir.<span class="server-only"> İlk hesaplama ~1–2 dk sürer.</span></p>
+      </div>
       <button id="apply">Uygula</button>
     </section>
 

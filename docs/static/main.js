@@ -684,7 +684,7 @@ function bindRange(id, onInput) {
 function showParams() {
   $('#params-umap').classList.toggle('on', S.method === 'umap');
   $('#params-tsne').classList.toggle('on', S.method === 'tsne');
-  $('#params-rtdae').classList.toggle('on', S.method === 'rtdae');
+  document.querySelectorAll('#method-notes [data-m]').forEach((el) => { el.hidden = el.dataset.m !== S.method; });
 }
 
 function setupControls() {

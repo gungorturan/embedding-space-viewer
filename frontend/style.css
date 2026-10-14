@@ -172,6 +172,6 @@ table.metrics td:first-child { color: var(--muted); }
 }
 
 /* Statik (GitHub Pages) sürümü: sunucu gerektiren kontroller gizlenir */
-.static-only { display: none; }
-body.static .static-only { display: block; }
 body.static .server-only { display: none !important; }
+
+#method-notes .hint { margin: 2px 0 8px; }
