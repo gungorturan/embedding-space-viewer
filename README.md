@@ -15,8 +15,11 @@ CLIP / SigLIP gibi görüntü-metin modellerinin ortak embedding uzayını 3B ve
 `docs/` klasörü backend gerektirmeyen bir sürümdür. Embedding'ler ve projeksiyonlar (3 yöntem × 3 centering) önceden hesaplanmıştır. Metin sorguları ziyaretçinin tarayıcısında [transformers.js](https://github.com/huggingface/transformers.js) ile CLIP text encoder'ı (fp16, ~127 MB, ilk sorguda bir kez iner) çalıştırılarak yapılır.
 
 ```bash
-uv run python -m scripts.export_static   # docs/ klasörünü yeniden üretir
+uv run python -m scripts.export_static            # docs/ klasörünü yeniden üretir (~15 dk)
+uv run python -m scripts.export_static --ui-only  # yalnızca arayüz değiştiyse (saniyeler)
 ```
+
+JS/CSS adreslerine içerik hash'i (`?v=...`) eklenir. GitHub Pages ~10 dk önbellek kullandığından, bu olmadan yeni HTML eski JS ile birleşip arayüzü bozabiliyordu.
 
 Kombinasyonlar `scripts/export_static.py` içindeki `COMBOS` listesinden değiştirilir. Tarayıcıdaki encoder'ın fp16 olmasının sebebi şu: 8-bit quantize varyantlar PyTorch embedding'leriyle ortalama yalnızca 0.79 cosine benzerliği veriyor ve komşu sıralamasını bozuyor. fp16'da bu benzerlik ~1.000.
 
