@@ -1,15 +1,18 @@
 """Backend gerektirmeyen statik site üretir (GitHub Pages için): docs/
 
-Embedding'ler, tüm projeksiyonlar (3 yöntem × 3 centering) ve gap metrikleri önceden
+Embedding'ler, tüm projeksiyonlar (4 yöntem × 3 centering) ve gap metrikleri önceden
 hesaplanır. Metin sorgusu tarayıcıda transformers.js ile çalışır.
 
-    uv run python -m scripts.export_static
+    uv run python -m scripts.export_static            # veri + arayüz (~15 dk)
+    uv run python -m scripts.export_static --ui-only  # yalnızca arayüz dosyaları
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -83,7 +86,40 @@ def export_combo(dataset: str, model: str, n: int) -> dict:
             "title": data.DATASETS[dataset]["title"], "kind": data.DATASETS[dataset]["kind"]}
 
 
+def export_ui():
+    """Arayüz dosyaları: aynı kod, statik modda çalışır.
+
+    GitHub Pages dosyaları ~10 dk önbelleğe alır; yeni index.html eski main.js ile
+    birleşirse arayüz kırılır. Bu yüzden JS/CSS adreslerine içerik hash'i eklenir.
+    """
+    front = ROOT / "frontend"
+    static = OUT / "static"
+    if static.exists():
+        shutil.rmtree(static)
+    static.mkdir(parents=True)
+    files = sorted(f.name for f in front.iterdir() if f.suffix in (".js", ".css"))
+    h = hashlib.sha256()
+    for name in files:
+        h.update((front / name).read_bytes())
+    v = h.hexdigest()[:10]
+    for name in files:
+        text = (front / name).read_text()
+        for other in files:  # modüller arası import'lar da aynı sürümü istesin
+            text = text.replace(f"'./{other}'", f"'./{other}?v={v}'")
+        (static / name).write_text(text)
+    html = (front / "index.html").read_text()
+    html = html.replace('<html lang="tr">', '<html lang="tr" data-mode="static">')
+    for name in files:
+        html = html.replace(f'"static/{name}"', f'"static/{name}?v={v}"')
+    (OUT / "index.html").write_text(html)
+    (OUT / ".nojekyll").write_text("")  # GitHub Pages'in Jekyll işlemesini kapat
+    print(f"arayüz kopyalandı (sürüm {v})")
+
+
 def main():
+    if "--ui-only" in sys.argv:
+        export_ui()
+        return
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir()
@@ -95,12 +131,7 @@ def main():
     }
     (OUT / "data" / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1))
 
-    # Arayüz dosyaları: aynı kod, statik modda çalışır
-    front = ROOT / "frontend"
-    shutil.copytree(front, OUT / "static", ignore=shutil.ignore_patterns("index.html"))
-    html = (front / "index.html").read_text()
-    (OUT / "index.html").write_text(html.replace('<html lang="tr">', '<html lang="tr" data-mode="static">'))
-    (OUT / ".nojekyll").write_text("")  # GitHub Pages'in Jekyll işlemesini kapat
+    export_ui()
 
     size = sum(f.stat().st_size for f in OUT.rglob("*") if f.is_file())
     print(f"docs/ hazır: {size / 1e6:.1f} MB")
